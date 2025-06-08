@@ -178,7 +178,6 @@ func TestErrorHandling_MissingFields(t *testing.T) {
 		t.Errorf("expected id 'c1', got %q", resp.ID)
 	}
 
-	// Missing subscription on subscribe
 	handshake := &message.BayeuxMessage{Channel: "/meta/handshake"}
 	hresp := srv.HandleMessage(handshake)
 	clientID := hresp.ClientID
@@ -186,7 +185,6 @@ func TestErrorHandling_MissingFields(t *testing.T) {
 		Channel:  "/meta/subscribe",
 		ClientID: clientID,
 		ID:       "s1",
-		// Subscription missing
 	}
 	sresp := srv.HandleMessage(subscribe)
 	if sresp.Successful == nil || *sresp.Successful != false {

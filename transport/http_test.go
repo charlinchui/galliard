@@ -18,7 +18,6 @@ func TestHTTPHandler_HandshakeSubscribePublish(t *testing.T) {
 	ts := httptest.NewServer(handler)
 	defer ts.Close()
 
-	// Handshake
 	handshakeReq := []message.BayeuxMessage{{Channel: "/meta/handshake"}}
 	handshakeResp := postBayeux(t, ts.URL, handshakeReq)
 	if len(handshakeResp) != 1 || handshakeResp[0].ClientID == "" {
@@ -26,7 +25,6 @@ func TestHTTPHandler_HandshakeSubscribePublish(t *testing.T) {
 	}
 	clientID := handshakeResp[0].ClientID
 
-	// Subscribe
 	subscribeReq := []message.BayeuxMessage{{
 		Channel:      "/meta/subscribe",
 		ClientID:     clientID,
@@ -37,7 +35,6 @@ func TestHTTPHandler_HandshakeSubscribePublish(t *testing.T) {
 		t.Fatalf("subscribe failed: %+v", subscribeResp)
 	}
 
-	// Publish
 	publishReq := []message.BayeuxMessage{{
 		Channel:  "/foo",
 		ClientID: clientID,
@@ -48,7 +45,6 @@ func TestHTTPHandler_HandshakeSubscribePublish(t *testing.T) {
 		t.Fatalf("publish failed: %+v", publishResp)
 	}
 
-	// Connect (should receive the published message)
 	connectReq := []message.BayeuxMessage{{
 		Channel:  "/meta/connect",
 		ClientID: clientID,
