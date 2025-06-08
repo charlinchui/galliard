@@ -3,7 +3,7 @@ package channel
 import (
 	"sync"
 
-	"github.com/charlinchui/galliard/client"
+	"github.com/charlinchui/galliard/internal/client"
 	"github.com/charlinchui/galliard/message"
 )
 

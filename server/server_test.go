@@ -22,22 +22,22 @@ func TestNewServer(t *testing.T) {
 func TestRegisterNewSession(t *testing.T) {
 	srv := NewServer()
 	id := "client-xyz"
-	s := srv.RegisterSession(id)
+	s := srv.registerSession(id)
 	if s.ID != id {
 		t.Errorf("Expected session ID to be client-xyz")
 	}
-	if got := srv.GetSession(id); got != s {
+	if got := srv.getSession(id); got != s {
 		t.Errorf("Expected GetSession to return the registered session")
 	}
 }
 
 func TestGetOrCreateChannel(t *testing.T) {
 	srv := NewServer()
-	ch1 := srv.GetOrCreateChannel("/foo")
+	ch1 := srv.getOrCreateChannel("/foo")
 	if ch1.Name != "/foo" {
 		t.Errorf("Expected channel name to be '/foo'")
 	}
-	ch2 := srv.GetOrCreateChannel("/foo")
+	ch2 := srv.getOrCreateChannel("/foo")
 	if ch1 != ch2 {
 		t.Errorf("Expected the same channel to be returned")
 	}
@@ -56,8 +56,11 @@ func TestHandleHandshake(t *testing.T) {
 	if resp.Successful == nil || !*resp.Successful {
 		t.Errorf("Expected successful handshake")
 	}
-	if got := srv.GetSession(resp.ClientID); got == nil {
+	if got := srv.getSession(resp.ClientID); got == nil {
 		t.Errorf("Expected session to be registered after handshake")
+	}
+	if resp.Advice == nil {
+		t.Errorf("Expected advice in handshake response")
 	}
 }
 
@@ -100,6 +103,9 @@ func TestHandleAndSubscribe(t *testing.T) {
 	if connResp.Data["msg"] != "hello" {
 		t.Errorf("Expected data 'hello', got %v", connResp.Data["msg"])
 	}
+	if connResp.Channel == "/meta/connect" && connResp.Advice == nil {
+		t.Errorf("Expected advice in connect response")
+	}
 }
 
 func TestHandleUnsubscribe(t *testing.T) {
@@ -138,7 +144,7 @@ func TestHandleDisconnect(t *testing.T) {
 		t.Errorf("Expected successful disconnect")
 	}
 
-	if got := srv.GetSession(clientID); got != nil {
+	if got := srv.getSession(clientID); got != nil {
 		t.Errorf("Expected session to be removed after disconnect")
 	}
 }
@@ -176,6 +182,9 @@ func TestErrorHandling_MissingFields(t *testing.T) {
 	}
 	if resp.ID != "c1" {
 		t.Errorf("expected id 'c1', got %q", resp.ID)
+	}
+	if resp.Advice == nil {
+		t.Errorf("Expected advice in error response")
 	}
 
 	handshake := &message.BayeuxMessage{Channel: "/meta/handshake"}

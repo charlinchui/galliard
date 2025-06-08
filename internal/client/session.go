@@ -10,7 +10,20 @@ type Session struct {
 	ID            string
 	Subscriptions map[string]struct{}
 	MessageQueue  []*message.BayeuxMessage
+	Advice        *message.Advice
 	mu            sync.Mutex
+}
+
+func (s *Session) SetAdvice(advice *message.Advice) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.Advice = advice
+}
+
+func (s *Session) GetAdvice() *message.Advice {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.Advice
 }
 
 func NewSession(id string) *Session {
