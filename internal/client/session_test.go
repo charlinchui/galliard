@@ -48,3 +48,20 @@ func TestEnqueueDequeue(t *testing.T) {
 		t.Errorf("Expected queue to be empty after dequeue")
 	}
 }
+
+func TestSessionAdvice(t *testing.T) {
+	s := NewSession("client-3")
+	advice := &message.Advice{
+		Reconnect: "retry",
+		Interval:  1000,
+		Timeout:   5000,
+	}
+	s.SetAdvice(advice)
+	got := s.GetAdvice()
+	if got == nil {
+		t.Fatalf("Expected advice to be set")
+	}
+	if got.Reconnect != "retry" || got.Interval != 1000 || got.Timeout != 5000 {
+		t.Errorf("Advice fields not set correctly: %+v", got)
+	}
+}
