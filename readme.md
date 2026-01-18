@@ -13,7 +13,6 @@ Inspired by Faye and CometD, Galliard aims to be simple, robust, and easy to ext
 - **Thread-safe**: fine-grained locking for high concurrency
 - **Minimal public API**: just what you need, nothing you don’t
 - **Extensible**: ready for server-side hooks, custom channels, and more
-- **Well-documented**: GoDoc comments and usage examples
 
 ---
 
